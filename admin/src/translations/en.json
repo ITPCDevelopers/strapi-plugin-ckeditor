@@ -1,0 +1,16 @@
+{
+  "vu-strapi-plugin-ckeditor.label": "VU Rich text editor",
+  "vu-strapi-plugin-ckeditor.description": "A plugin enabling rich-text editing via CKEditor",
+  "vu-strapi-plugin-ckeditor.preset.label": "Choose editor version",
+  "vu-strapi-plugin-ckeditor.preset.description": "Do you need more or less features?",
+  "vu-strapi-plugin-ckeditor.preset.light.label": "Light version",
+  "vu-strapi-plugin-ckeditor.preset.standard.label": "Standard version",
+  "vu-strapi-plugin-ckeditor.preset.custom.label": "VU custom",
+  "vu-strapi-plugin-ckeditor.preset.minimal.label": "Minimal",
+  "vu-strapi-plugin-ckeditor.settings": "Settings",
+  "vu-strapi-plugin-ckeditor.required.label": "Required field",
+  "vu-strapi-plugin-ckeditor.required.description": "You won't be able to create an entry if this field is empty",
+  "vu-strapi-plugin-ckeditor.preset.error.required'": "Editor preset is required",
+  "vu-strapi-plugin-ckeditor.output.label": "Choose output type",
+  "vu-strapi-plugin-ckeditor.output.description": "Decide, whether you want to get your output in HTML or Markdown"
+}
