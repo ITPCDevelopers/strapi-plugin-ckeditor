@@ -1,4 +1,4 @@
-A plugin enabling rich-text editing via CKEditor.
+A plugin enabling rich-text editing via CKEditor 5.
 It is based on official [plugin](https://github.com/ckeditor/strapi-plugin-ckeditor)
 
 ## Development
