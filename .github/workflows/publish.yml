@@ -64,8 +64,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # 6️⃣ Build package
-      - name: Build
-        run: npm run build
+      #- name: Build
+      #  run: npm run build
 
       # 7️⃣ Publish to npm
       - name: Publish to npm
