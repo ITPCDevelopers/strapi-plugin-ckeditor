@@ -1,4 +1,4 @@
-name: Auto Semantic Publish
+name: Publish to npm
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
       - main
 
 permissions:
-  contents: write  # ✅ allows pushing commits and tags back to the repo
+  contents: write
 
 jobs:
-  auto-publish:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # needed to fetch tags and push commits
+          fetch-depth: 2 # need at least last commit to compare
 
       # 2️⃣ Setup Node.js
       - name: Setup Node.js
@@ -30,45 +30,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Determine semantic version bump
-      - name: Determine version bump
-        id: semver
+      # 4️⃣ Check if package.json version changed
+      - name: Check for version change
+        id: check
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          echo "Last tag: $LAST_TAG"
-          COMMITS=$(git log ${LAST_TAG}..HEAD --pretty=%B)
-          echo "Commits since last tag: $COMMITS"
-
-          if echo "$COMMITS" | grep -q 'BREAKING CHANGE'; then
-            VERSION_BUMP="major"
-          elif echo "$COMMITS" | grep -q '^feat:'; then
-            VERSION_BUMP="minor"
+          if git diff --quiet HEAD^ HEAD -- package.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
           else
-            VERSION_BUMP="patch"
+            echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-          echo "VERSION_BUMP=$VERSION_BUMP" >> $GITHUB_OUTPUT
-
-      # 5️⃣ Bump version safely and push back to GitHub
-      - name: Bump version
-        run: |
-          npm version ${{ steps.semver.outputs.VERSION_BUMP }} --no-git-tag-version
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json
-          git commit -m "Automated release v$(node -p "require('./package.json').version")"
-          git tag v$(node -p "require('./package.json').version")
-          git push origin main --follow-tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # 6️⃣ Build package
-      #- name: Build
-      #  run: npm run build
-
-      # 7️⃣ Publish to npm
+      # 5️⃣ Publish to npm only if package.json version changed
       - name: Publish to npm
+        if: steps.check.outputs.changed == 'true'
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
