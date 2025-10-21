@@ -1,6 +1,5 @@
 import { StrapiMediaLib } from "./plugins/StrapiMediaLib";
 import { StrapiEditorUsageDataPlugin } from "./plugins/StrapiEditorUsageData";
-import PasteCleanup from "./plugins/PasteCleanup";
 
 import MaximumLength from "../../vendor/ckeditor5-maximum-length/index";
 import "../../vendor/ckeditor5-maximum-length/index-editor.css";
