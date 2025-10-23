@@ -1,6 +1,6 @@
 {
   "name": "@vilnius-university/vu-strapi-plugin-ckeditor",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "CKEditor 5 plugin",
   "strapi": {
     "name": "vu-strapi-plugin-ckeditor",
