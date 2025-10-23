@@ -1,6 +1,6 @@
 {
   "name": "@vilnius-university/vu-strapi-plugin-ckeditor",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "CKEditor 5 plugin",
   "strapi": {
     "name": "vu-strapi-plugin-ckeditor",
@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "@ckeditor/ckeditor5-react": "11.0.0",
-    "ckeditor5": "46.0.0"
+    "ckeditor5": "47.1.0"
   }
 }
