@@ -106,18 +106,53 @@ export const style = css`
     .ck.ck-content.ck-editor__editable {
       line-height: initial;
       min-height: 12.5rem;
-      border-bottom-left-radius: 0.25rem;
-      border-bottom-right-radius: 0.25rem;
+      transition-property: border-color, box-shadow;
+      transition-duration: 0.2s;
+    }
+  }
 
-      // so it's more Strapi alike
-      &.ck-focused:not(.ck-editor__nested-editable) {
-        border: 1px solid rgb(73, 69, 255);
-        box-shadow: rgb(73 69 255) 0 0 0 0.125rem;
-        border-top-left-radius: 0.25rem;
-        border-top-right-radius: 0.25rem;
-        transition-property: border-color, box-shadow;
-        transition-duration: 0.2s;
+  /* Wrapper styling that mimics Strapi's Field.Input */
+  .ck-editor-wrapper {
+    border-radius: 4px;
+    border: 1px solid #dcdce4;
+    background: #ffffff;
+
+    &:focus-within {
+      outline: none;
+      border: 1px solid #4945ff;
+      box-shadow: #4945ff 0px 0px 0px 2px;
+    }
+
+    /* Remove CKEditor's default borders since wrapper handles them */
+    .ck.ck-editor__top {
+      border: none;
+      border-bottom: 1px solid #dcdce4;
+
+      .ck-sticky-panel .ck-sticky-panel__content {
+        border: none !important;
       }
+    }
+
+    .ck.ck-content.ck-editor__editable {
+      border: none;
+      box-shadow: none !important;
+
+      /* Remove CKEditor's own focus styling */
+      &.ck-focused:not(.ck-editor__nested-editable) {
+        border: none;
+        box-shadow: none !important;
+        outline: none;
+      }
+    }
+  }
+
+  /* Error state */
+  .ck-editor-wrapper-error {
+    border-color: #d02b20;
+
+    &:focus-within {
+      border-color: #d02b20;
+      box-shadow: #d02b20 0px 0px 0px 2px;
     }
   }
 `;

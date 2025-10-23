@@ -72,36 +72,6 @@ export default {
             type: "select",
             options: [
               {
-                key: "light",
-                value: "light",
-                metadatas: {
-                  intlLabel: {
-                    id: "vu-strapi-plugin-ckeditor.preset.light.label",
-                    defaultMessage: "Light version",
-                  },
-                },
-              },
-              {
-                key: "standard",
-                value: "standard",
-                metadatas: {
-                  intlLabel: {
-                    id: "vu-strapi-plugin-ckeditor.preset.standard.label",
-                    defaultMessage: "Standard version",
-                  },
-                },
-              },
-              {
-                key: "rich",
-                value: "rich",
-                metadatas: {
-                  intlLabel: {
-                    id: "vu-strapi-plugin-ckeditor.preset.rich.label",
-                    defaultMessage: "Rich version",
-                  },
-                },
-              },
-              {
                 key: "custom",
                 value: "custom",
                 metadatas: {
@@ -117,7 +87,7 @@ export default {
                 metadatas: {
                   intlLabel: {
                     id: "vu-strapi-plugin-ckeditor.preset.minimal.label",
-                    defaultMessage: "Minimal version",
+                    defaultMessage: "VU minimal",
                   },
                 },
               },
