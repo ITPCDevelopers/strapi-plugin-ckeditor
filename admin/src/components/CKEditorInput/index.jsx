@@ -1,31 +1,31 @@
 import React, { useRef, useState } from 'react'
-import { useIntl } from 'react-intl'
 import { Flex } from '@strapi/design-system'
 import { Field } from '@strapi/design-system'
 import PropTypes from 'prop-types'
-
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+import { ClassicEditor } from 'ckeditor5'
+import { useField } from '@strapi/strapi/admin'
 import { getGlobalStyling } from './GlobalStyling'
 import Configurator from './Configurator'
 import MediaLib from '../MediaLib'
-
-import { CKEditor } from '@ckeditor/ckeditor5-react'
-
-import { ClassicEditor } from 'ckeditor5'
-
 import sanitize from './utils/utils'
-import { useField } from '@strapi/strapi/admin'
 
 const strapiTheme = localStorage.getItem('STRAPI_THEME') || 'light'
 const GlobalStyling = getGlobalStyling(strapiTheme)
 
 const CKEditorInput = (props) => {
-  const { attribute, name, disabled, labelAction, required, description, error, intlLabel } = props
-  const { onChange, value } = useField(name)
+  const { attribute, name, disabled, labelAction, required, hint, placeholder, label } = props
+
+  const { onChange, value, error } = useField(name)
   const [editorInstance, setEditorInstance] = useState(false)
-  const { formatMessage } = useIntl()
   const { maxLengthCharacters: maxLength, licenseKey, ...options } = attribute.options
   const configurator = new Configurator({ options, maxLength, licenseKey })
   const editorConfig = configurator.getEditorConfig()
+
+  // Add placeholder to editor config if provided
+  if (placeholder) {
+    editorConfig.placeholder = placeholder
+  }
 
   const wordCounter = useRef(null)
 
@@ -91,50 +91,36 @@ const CKEditorInput = (props) => {
   }
 
   return (
-    <Field.Root
-      name={name}
-      id={name}
-      // GenericInput calls formatMessage and returns a string for the error
-      error={error}
-      hint={description && formatMessage(description)}
-      required={required}
-    >
-      <Flex spacing={1} alignItems="normal" style={{ flexDirection: 'column' }}>
-        <Field.Label action={labelAction} required={required}>
-          {intlLabel ? formatMessage(intlLabel) : name}
-        </Field.Label>
+    <Field.Root name={name} id={name} error={error} hint={hint} required={required}>
+      <Flex direction="column" alignItems="stretch" gap={1}>
+        <Field.Label action={labelAction}>{label || name}</Field.Label>
         <GlobalStyling />
-        <CKEditor
-          editor={ClassicEditor}
-          disabled={disabled}
-          data={value ?? ''}
-          onReady={(editor) => {
-            const wordCountPlugin = editor.plugins.get('WordCount')
-            const wordCountWrapper = wordCounter.current
-            wordCountWrapper.appendChild(wordCountPlugin.wordCountContainer)
+        <div className={`ck-editor-wrapper ${error ? 'ck-editor-wrapper-error' : ''}`}>
+          <CKEditor
+            editor={ClassicEditor}
+            disabled={disabled}
+            data={value ?? ''}
+            onReady={(editor) => {
+              const wordCountPlugin = editor.plugins.get('WordCount')
+              const wordCountWrapper = wordCounter.current
+              wordCountWrapper.appendChild(wordCountPlugin.wordCountContainer)
 
-            // Only connect media lib if the plugin is available
-            if (editor.plugins.has('strapiMediaLib')) {
-              const mediaLibPlugin = editor.plugins.get('strapiMediaLib')
-              mediaLibPlugin.connect(handleToggleMediaLib)
-            }
+              // Only connect media lib if the plugin is available
+              if (editor.plugins.has('strapiMediaLib')) {
+                const mediaLibPlugin = editor.plugins.get('strapiMediaLib')
+                mediaLibPlugin.connect(handleToggleMediaLib)
+              }
 
-            setEditorInstance(editor)
-          }}
-          onChange={(event, editor) => {
-            const data = editor.getData()
-            onChange({ target: { name, value: data } })
-
-            const wordCountPlugin = editor.plugins.get('WordCount')
-            const numberOfCharacters = wordCountPlugin.characters
-
-            if (numberOfCharacters > maxLength) {
-              console.log('Too long')
-            }
-          }}
-          config={editorConfig}
-        />
-        <div ref={wordCounter}></div>
+              setEditorInstance(editor)
+            }}
+            onChange={(event, editor) => {
+              const data = editor.getData()
+              onChange({ target: { name, value: data } })
+            }}
+            config={editorConfig}
+          />
+        </div>
+        <div ref={wordCounter} />
         <Field.Hint />
         <Field.Error />
       </Flex>
@@ -150,11 +136,13 @@ const CKEditorInput = (props) => {
 CKEditorInput.propTypes = {
   attribute: PropTypes.object.isRequired,
   name: PropTypes.string.isRequired,
-  description: PropTypes.object,
+  hint: PropTypes.string,
+  placeholder: PropTypes.string,
   disabled: PropTypes.bool,
   error: PropTypes.string,
   labelAction: PropTypes.object,
   required: PropTypes.bool,
+  label: PropTypes.string,
 }
 
 export { CKEditorInput }

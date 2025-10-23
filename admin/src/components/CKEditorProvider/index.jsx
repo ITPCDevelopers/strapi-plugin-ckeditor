@@ -1,17 +1,21 @@
-import { memo } from "react";
-import { CKEditorInput } from "../CKEditorInput";
-import "ckeditor5/ckeditor5.css";
+import {memo} from 'react'
+import {CKEditorInput} from '../CKEditorInput'
+import 'ckeditor5/ckeditor5.css'
 
-const CKEditorProvider = ({
-  attribute,
-  name,
-  disabled = false,
-  labelAction = null,
-  required = false,
-  description = null,
-  error = null,
-  intlLabel,
-}) => {
+const CKEditorProvider = (props) => {
+  const {
+    attribute,
+    name,
+    disabled = false,
+    labelAction = null,
+    required = false,
+    description = null,
+    hint = null,
+    placeholder = null,
+    error = null,
+    label,
+  } = props
+
   return (
     <CKEditorInput
       attribute={attribute}
@@ -19,11 +23,12 @@ const CKEditorProvider = ({
       disabled={disabled}
       labelAction={labelAction}
       required={required}
-      description={description}
+      hint={hint || description}
+      placeholder={placeholder}
       error={error}
-      intlLabel={intlLabel}
+      label={label}
     />
-  );
-};
+  )
+}
 
-export default memo(CKEditorProvider);
+export default memo(CKEditorProvider)
