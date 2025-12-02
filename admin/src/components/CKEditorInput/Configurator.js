@@ -200,6 +200,28 @@ const CKEDITOR_BASE_CONFIG_FOR_PRESETS = {
         },
       },
     },
+    mediaEmbed: {
+      previewsInData: true,
+      providers: [
+        {
+          name: 'youtube',
+          url: [
+            /youtube\.com\/watch\?v=([\w-]+)/,
+            /youtu\.be\/([\w-]+)/
+          ],
+          html: match => {
+            const id = match[1];
+            return (
+              `<iframe width="560" height="315"
+                src="https://www.youtube.com/embed/${id}"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin">
+               </iframe>`
+            );
+          }
+        }
+      ]
+    },
   },
   minimal: {
     plugins: [
