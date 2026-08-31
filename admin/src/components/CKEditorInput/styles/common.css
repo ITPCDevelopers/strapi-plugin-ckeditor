@@ -1,3 +1,12 @@
+/* CKEditor balloons (link toolbar, panels) render in a portal appended to
+   document.body — outside Strapi's relation modal (Radix Dialog). An open
+   dialog disables pointer events for everything outside itself, which froze
+   the balloon buttons when the editor is used inside "Edit a relation".
+   Restore interactivity for the portal explicitly. */
+.ck-body-wrapper {
+  pointer-events: auto;
+}
+
 .ck-word-count {
   display: flex;
   gap: 0.5rem;
@@ -7,7 +16,8 @@
 }
 
 .ck-editor__main {
-  --ck-font-face: "Source Sans Pro", system-ui, Roboto, "Helvetica Neue", "Helvetica", Arial, sans-serif;
+  --ck-font-face: 'Source Sans Pro', system-ui, Roboto, 'Helvetica Neue', 'Helvetica', Arial,
+    sans-serif;
   color: var(--ck-color-editor-base-text);
   font-family: var(--ck-font-face);
 
