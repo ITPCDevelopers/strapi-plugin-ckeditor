@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Flex } from '@strapi/design-system'
 import { Field } from '@strapi/design-system'
 import PropTypes from 'prop-types'
@@ -13,6 +13,8 @@ import sanitize from './utils/utils'
 const strapiTheme = localStorage.getItem('STRAPI_THEME') || 'light'
 const GlobalStyling = getGlobalStyling(strapiTheme)
 
+const guardedEventTypes = ['pointerdown', 'mousedown', 'touchstart', 'click', 'focusin']
+
 const CKEditorInput = (props) => {
   const { attribute, name, disabled, labelAction, required, hint, placeholder, label } = props
 
@@ -26,6 +28,31 @@ const CKEditorInput = (props) => {
   if (placeholder) {
     editorConfig.placeholder = placeholder
   }
+
+  // Radix dialogs (e.g. Strapi's "Edit a relation" modal) dismiss themselves when a
+  // pointer/focus event reaches document from outside their subtree. CKEditor renders
+  // its balloons (link toolbar & forms) in a body-collection portal on document.body,
+  // so interacting with them closed the modal — keep those events inside the portal.
+  useEffect(() => {
+    if (!editorInstance) {
+      return
+    }
+
+    const portal = editorInstance.ui.view.body.bodyCollectionContainer
+
+    if (!portal) {
+      return
+    }
+
+    const controller = new AbortController()
+    const stopPropagation = (event) => event.stopPropagation()
+
+    guardedEventTypes.forEach((type) => {
+      portal.addEventListener(type, stopPropagation, { signal: controller.signal })
+    })
+
+    return () => controller.abort()
+  }, [editorInstance])
 
   const wordCounter = useRef(null)
 
