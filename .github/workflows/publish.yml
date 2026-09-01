@@ -27,12 +27,11 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      # Trusted publishing requires npm 11.5.1+ (node 22 ships an older npm)
+      # Trusted publishing requires npm 11.5.1+ (node 22 ships an older npm).
+      # No install step: the plugin is published as source (no build, no scripts),
+      # so neither the version check nor npm publish needs node_modules.
       - name: Update npm
         run: npm install -g npm@latest
-
-      - name: Install dependencies
-        run: npm ci
 
       # Publish only when package.json carries a version the registry doesn't
       # have yet — robust regardless of which commit bumped the version.
