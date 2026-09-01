@@ -1,6 +1,10 @@
 {
   "name": "@vilnius-university/vu-strapi-plugin-ckeditor",
   "version": "1.0.13",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ITPCDevelopers/strapi-plugin-ckeditor.git"
+  },
   "description": "CKEditor 5 plugin",
   "strapi": {
     "name": "vu-strapi-plugin-ckeditor",
