@@ -4,47 +4,51 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
+# npm Trusted Publishing (OIDC): the job authenticates to npmjs with a short-lived
+# OIDC token instead of a long-lived NPM_TOKEN secret. Requires the package's
+# npmjs settings to list this repo + workflow as a Trusted Publisher.
 permissions:
   id-token: write
-  contents: write
+  contents: read
 
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
       - name: Checkout repo
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 2 # need at least last commit to compare
 
-      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      # 3️⃣ Install dependencies
+      # Trusted publishing requires npm 11.5.1+ (node 22 ships an older npm)
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Check if package.json version changed
-      - name: Check for version change
+      # Publish only when package.json carries a version the registry doesn't
+      # have yet — robust regardless of which commit bumped the version.
+      - name: Check if the version is unpublished
         id: check
         run: |
-          if git diff --quiet HEAD^ HEAD -- package.json; then
+          NAME=$(node -p "require('./package.json').name")
+          LOCAL=$(node -p "require('./package.json').version")
+          PUBLISHED=$(npm view "$NAME" version 2>/dev/null || echo "none")
+          echo "Local: $LOCAL, published: $PUBLISHED"
+          if [ "$LOCAL" = "$PUBLISHED" ]; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
-      # 5️⃣ Publish to npm only if package.json version changed
       - name: Publish to npm
         if: steps.check.outputs.changed == 'true'
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
