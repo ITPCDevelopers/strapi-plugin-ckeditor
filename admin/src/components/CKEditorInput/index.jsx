@@ -51,6 +51,21 @@ const CKEditorInput = (props) => {
       portal.addEventListener(type, stopPropagation, { signal: controller.signal })
     })
 
+    // The dialog's focus trap also watches `focusout` bubbling from INSIDE the
+    // dialog (e.g. the editor losing focus to the balloon's URL input) and yanks
+    // the focus back, making balloon inputs untypeable. That event never crosses
+    // the portal, so it has to be intercepted at the document level before the
+    // trap's own document listener sees it.
+    document.addEventListener(
+      'focusout',
+      (event) => {
+        if (event.relatedTarget instanceof Node && portal.contains(event.relatedTarget)) {
+          event.stopPropagation()
+        }
+      },
+      { capture: true, signal: controller.signal }
+    )
+
     return () => controller.abort()
   }, [editorInstance])
 
